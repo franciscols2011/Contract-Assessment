@@ -14,7 +14,14 @@ router.get(
     (req, res) => {
         res.redirect(`${process.env.CLIENT_URL}/dashboard`);
     }
-)
+);
 
+router.get('/current-user', (req, res) => {
+    if (res.json(req.user)) {
+        res.json(req.user);
+    } else {
+        res.status(401).json({ message: "Unauthorized" });
+    }
+});
 
 export default router;
