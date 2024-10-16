@@ -1,3 +1,4 @@
+import { error } from 'console';
 import express from 'express';
 import passport from 'passport';
 
@@ -17,11 +18,20 @@ router.get(
 );
 
 router.get('/current-user', (req, res) => {
-    if (res.json(req.user)) {
+    if(req.isAuthenticated()){
         res.json(req.user);
     } else {
-        res.status(401).json({ message: "Unauthorized" });
+        res.status(401).json({ message: "You are not authenticated" });
     }
+});
+
+router.get('/logout', (req, res, next) => {
+    req.logout((err) => {
+        if (err) {
+            return next(err);
+        }
+        res.status(200).json({ message: "You are logged out" });
+    });
 });
 
 export default router;
