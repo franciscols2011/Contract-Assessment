@@ -17,4 +17,4 @@ export const useCurrentUser = () => {
 
     return { isLoading, isError, user };
 
-}
+};
