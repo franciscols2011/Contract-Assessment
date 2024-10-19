@@ -37,4 +37,9 @@ export const extractTextFromPDF = async (fileKey: string) => {
         console.error(error);
         throw new Error(`Error extracting text from PDF. Error: ${JSON.stringify(error)}`);
     }
+
 };
+
+// export const detectContractType = async (
+//     contractText: string,
+// ): Promise<string> => {}
