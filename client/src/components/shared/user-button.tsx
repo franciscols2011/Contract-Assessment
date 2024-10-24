@@ -50,7 +50,9 @@ export function UserButton() {
 						<DropdownMenuContent className="w-56" forceMount>
 							<DropdownMenuItem className="flex flex-col items-start">
 								<div className="text-sm font-medium">{user?.displayName}</div>
-								<div className="text-sm font-medium">{user?.email}</div>
+								<div className="text-sm text-muted-foreground">
+									{user?.email}
+								</div>
 							</DropdownMenuItem>
 							<DropdownMenuSeparator />
 							<DropdownMenuItem asChild>
