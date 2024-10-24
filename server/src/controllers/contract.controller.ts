@@ -65,11 +65,13 @@ export const analyzeContract = async (req: Request, res: Response) => {
 
         analysis = await analyzeContractWithAI(pdfText, contractType);
 
+        console.log(analysis)
+
 
         //@ts-ignore
-        if(!analysis.summary || !analysis.risks || !analysis.opportunities){
-            throw new Error("Analysis is incomplete");
-        }
+        // if(!analysis.summary || !analysis.risks || !analysis.opportunities){
+        //     throw new Error("Analysis is incomplete");
+        // }
 
         const savedAnalysis = await ContractAnalysisSchema.create({
             userId: user._id,

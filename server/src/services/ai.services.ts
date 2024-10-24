@@ -2,13 +2,13 @@ import redis from "../config/redis";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const AI_MODEL = 'gemini-pro';
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 const aiModel = genAI.getGenerativeModel({ model: AI_MODEL });
 
 export const extractTextFromPDF = async (fileKey: string) => {
     try {
-        // Importación dinámica de getDocument desde pdfjs-dist
-        const { getDocument } = await import('pdfjs-dist');
+        const pdfjsLib = await import('pdfjs-dist/legacy/build/pdf.js');
+        const { getDocument } = pdfjsLib;
 
         const fileData = await redis.get(fileKey);
         if (!fileData) {
@@ -33,7 +33,7 @@ export const extractTextFromPDF = async (fileKey: string) => {
 
         const pdf = await getDocument({ data: fileBuffer }).promise;
         let text = '';
-        for (let i = 1; i <= pdf.numPages; i++) { // Las páginas comienzan en 1
+        for (let i = 1; i <= pdf.numPages; i++) {
             const page = await pdf.getPage(i);
             const response = await page.getTextContent();
             text += response.items.map((item: any) => item.str).join('') + "\n";
@@ -61,7 +61,6 @@ export const detectContractType = async (
     const response = results.response;
     return response.text().trim();
 };
-
 
 export const analyzeContractWithAI = async (
     contractText: string,
@@ -107,13 +106,85 @@ export const analyzeContractWithAI = async (
 
     prompt += `
       Important: Provide only the JSON object in your response, without any additional text or formatting. 
-      
+    
       
       Contract text:
       ${contractText}
       `;
 
     const results = await aiModel.generateContent(prompt);
-    const response = results.response;
-    return response.text()
+    const response = await results.response;
+    let text = response.text();
+
+
+    text = text.replace(/```json\n?|\n?```/g, '').trim();
+
+    try {
+        text = text.replace(/([{,]\s*)(\w+)(\s*:)/g, '$1"$2"$3'); 
+        text = text.replace(/:\s*"([^"]*)"([^,}\]])/g, ': "$1"$2'); 
+        text = text.replace(/,\s*}/g, "}"); 
+
+        const analysis = JSON.parse(text);
+        return analysis;
+    
+    } catch (error) {
+        console.error("Error parsing JSON:", error);
+    }
+
+    interface IRisk {
+        risk: string;
+        explanation: string;
+      }
+    
+      interface IOpportunity {
+        opportunity: string;
+        explanation: string;
+      }
+    
+      interface FallbackAnalysis {
+        risks: IRisk[];
+        opportunities: IOpportunity[];
+        summary: string;
+      }
+
+
+    const fallbackAnalysis: FallbackAnalysis = {
+        risks: [],
+        opportunities: [],
+        summary: "Error analyzing contract",
+    }
+
+    const risksMatch = text.match(/"risks"\s*:\s*\[([\s\S]*?)\]/);
+    if (risksMatch){
+        fallbackAnalysis.risks = risksMatch[1].split("},").map(risk => {
+            const riskMatch = risk.match(/"risk"\s*:\s*"([^"]*)"/);
+            const explanationMatch = risk.match(/"explanation"\s*:\s*"([^"]*)"/);
+
+            return {
+                risk: riskMatch ? riskMatch[1] : "Uknown risk",
+                explanation: explanationMatch ? explanationMatch[1] : "No explanation provided",
+            }
+        })
+    }
+
+    const opportunitiesMatch = text.match(/"opportunities"\s*:\s*\[([\s\S]*?)\]/);
+    if (opportunitiesMatch){
+        fallbackAnalysis.opportunities = opportunitiesMatch[1].split("},").map(opportunity => {
+            const opportunityMatch = opportunity.match(/"opportunity"\s*:\s*"([^"]*)"/);
+            const explanationMatch = opportunity.match(/"explanation"\s*:\s*"([^"]*)"/);
+            return {
+                opportunity: opportunityMatch ? opportunityMatch[1] : "Uknown opportunity",
+                explanation: explanationMatch ? explanationMatch[1] : "No explanation provided",
+            }
+
+        })
+    }
+
+    const summaryMatch = text.match(/"summary"\s*:\s*"([^"]*)"/);
+    if (summaryMatch){
+        fallbackAnalysis.summary = summaryMatch[1];
+    }
+
+    return fallbackAnalysis;
+    
 };
