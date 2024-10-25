@@ -12,17 +12,9 @@ import { useMutation } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { AnimatePresence, motion } from "framer-motion";
-import {
-	FileText,
-	Loader2,
-	LucideBrainCircuit,
-	Sparkles,
-	Trash,
-} from "lucide-react";
+import { FileText, Loader2, Sparkles, Trash } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
-import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
-import { useRouter } from "next/navigation";
 
 interface IUploadModalProps {
 	isOpen: boolean;
@@ -36,7 +28,6 @@ export function UploadModal({
 	onUploadComplete,
 }: IUploadModalProps) {
 	const { setAnalysisResults } = useContractStore();
-	const router = useRouter();
 
 	const [detectedType, setDetectedType] = useState<string | null>(null);
 	const [error, setError] = useState<string | null>(null);
@@ -89,14 +80,10 @@ export function UploadModal({
 					"Content-Type": "multipart/form-data",
 				},
 			});
-
-			console.log(response.data);
-
 			return response.data;
 		},
 		onSuccess: (data) => {
 			setAnalysisResults(data);
-			setStep("done");
 			onUploadComplete();
 		},
 		onError: (error) => {
@@ -242,79 +229,7 @@ export function UploadModal({
 			case "processing": {
 				return (
 					<AnimatePresence>
-						<motion.div
-							initial={{ opacity: 0, scale: 0.9 }}
-							animate={{ opacity: 1, scale: 1 }}
-							exit={{ opacity: 0, scale: 0.9 }}
-							transition={{ duration: 0.5 }}
-							className="flex flex-col items-center justify-center py-8"
-						>
-							<motion.div
-								animate={{
-									scale: [1, 1.2, 1],
-									rotate: [0, 360],
-								}}
-								transition={{
-									duration: 3,
-									repeat: Infinity,
-									ease: "easeInOut",
-								}}
-							>
-								<LucideBrainCircuit className="size-20 text-primary" />
-							</motion.div>
-							<motion.p
-								initial={{ opacity: 0, y: 20 }}
-								animate={{ opacity: 1, y: 0 }}
-								transition={{ delay: 0.5 }}
-								className="mt-6 text-lg font-semibold text-gray-700"
-							>
-								AI is analyzing your contract...
-							</motion.p>
-							<motion.p
-								initial={{ opacity: 0 }}
-								animate={{ opacity: 1 }}
-								transition={{ delay: 1 }}
-								className="mt-6 text-lg text-gray-700"
-							>
-								This may take a few seconds...
-							</motion.p>
-							<motion.div
-								className="w-64 h-2 bg-gray-200 rounded-full mt-6 overflow-hidden"
-								initial={{ width: 0 }}
-								animate={{ width: "100%" }}
-								transition={{ duration: 10, ease: "linear" }}
-							>
-								<motion.div
-									className="h-full bg-primary"
-									initial={{ width: "0%" }}
-									animate={{ width: "100%" }}
-									transition={{ duration: 10, ease: "linear" }}
-								/>
-							</motion.div>
-						</motion.div>
-					</AnimatePresence>
-				);
-			}
-			case "done": {
-				return (
-					<AnimatePresence>
-						<motion.div>
-							<Alert className="mt-4">
-								<AlertTitle>Analysis complete!</AlertTitle>
-								<AlertDescription>
-									Your contract has been analyzed. Can now view the results.
-								</AlertDescription>
-							</Alert>
-
-							<motion.div className="mt-6 flex flex-col space-y-3 relative">
-								<Button onClick={() => router.push("/dashboard/results")}>
-									View results
-								</Button>
-								<Button variant={"outline"} onClick={handleClose}>
-									Close
-								</Button>
-							</motion.div>
-						</motion.div>
+						<motion.div className="">waiting</motion.div>
 					</AnimatePresence>
 				);
 			}
