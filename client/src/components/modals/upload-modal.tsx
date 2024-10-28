@@ -15,6 +15,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
 	FileText,
 	Loader2,
+	LucideBrain,
 	LucideBrainCircuit,
 	Sparkles,
 	Trash,
@@ -89,8 +90,6 @@ export function UploadModal({
 					"Content-Type": "multipart/form-data",
 				},
 			});
-
-			console.log(response.data);
 
 			return response.data;
 		},
@@ -260,7 +259,7 @@ export function UploadModal({
 									ease: "easeInOut",
 								}}
 							>
-								<LucideBrainCircuit className="size-20 text-primary" />
+								<LucideBrain className="size-20 text-primary" />
 							</motion.div>
 							<motion.p
 								initial={{ opacity: 0, y: 20 }}
