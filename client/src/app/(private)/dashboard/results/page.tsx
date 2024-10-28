@@ -8,7 +8,9 @@ export default function ContractResultsPage() {
 
 	return (
 		<ContractAnalysisResults
-			contractId={"TEST"}
+			contractId={analysisResults._id}
+			onUpgrade={() => console.log("upgrade")}
+			isActive={true}
 			analysisResults={analysisResults}
 		/>
 	);
