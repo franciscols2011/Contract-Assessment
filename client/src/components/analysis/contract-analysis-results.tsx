@@ -164,7 +164,7 @@ export default function ContractAnalysisResults({
 
 			<Card className="mb-6">
 				<CardHeader>
-					<CardTitle>Overal Contract Score</CardTitle>
+					<CardTitle>Overall Contract Score</CardTitle>
 					<CardDescription>
 						Based on risks and opportunities identified
 					</CardDescription>

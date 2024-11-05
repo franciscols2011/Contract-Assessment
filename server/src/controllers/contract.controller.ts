@@ -66,15 +66,16 @@ export const analyzeContract = async (req: Request, res: Response) => {
         const pdfText = await extractTextFromPDF(fileKey);
         let analysis;
 
-        analysis = await analyzeContractWithAI(pdfText, contractType);
+        if(user.isPremium){
+            analysis = await analyzeContractWithAI(pdfText,"pro" ,contractType);
+        }else{
+            analysis = await analyzeContractWithAI(pdfText,"free" ,contractType);
+        }
 
-        console.log(analysis)
-
-
-        //@ts-ignore
-        // if(!analysis.summary || !analysis.risks || !analysis.opportunities){
-        //     throw new Error("Analysis is incomplete");
-        // }
+        
+        if(!analysis.summary || !analysis.risks || !analysis.opportunities){
+            throw new Error("Analysis is incomplete");
+        }
 
         const savedAnalysis = await ContractAnalysisSchema.create({
             userId: user._id,
