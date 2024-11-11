@@ -5,6 +5,7 @@ import { FileText, Home, LayoutDashboard, Settings } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ElementType } from "react";
+import { motion } from "framer-motion";
 
 export const Sidebar = () => {
 	return (
@@ -75,12 +76,12 @@ const Navlink = ({
 				href={link.href}
 				target={link.target}
 				className={cn(
-					"group flex h-9 items-center gap-x-3 rounded-md px-3 text-sm font-semibold leading-5 text-black",
+					"group flex h-9 items-center gap-x-3 rounded-md px-3 text-sm font-semibold leading-5 text-black transition-colors",
 					path === link.href ? "bg-gray-200" : "hover:bg-gray-200"
 				)}
 			>
 				<link.icon className="size-4 shrink-0" />
-				{link.label} 
+				{link.label}
 			</Link>
 		</li>
 	);

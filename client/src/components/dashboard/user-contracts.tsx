@@ -43,8 +43,8 @@ import {
 	AlertDialogTitle,
 	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 async function fetchUserContract(): Promise<ContractAnalysis[]> {
 	const response = await api.get("/contracts/user-contracts");
@@ -58,7 +58,6 @@ export default function UserContracts() {
 	});
 
 	const [sorting, setSorting] = useState<SortingState>([]);
-
 	const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
 
 	const contractTypeColors: { [key: string]: string } = {
@@ -74,14 +73,14 @@ export default function UserContracts() {
 	const columns: ColumnDef<ContractAnalysis>[] = [
 		{
 			accessorKey: "_id",
-			header: () => <Button variant={"ghost"}>Contract ID</Button>,
+			header: () => <Button variant="ghost">Contract ID</Button>,
 			cell: ({ row }) => (
 				<div className="font-medium">{row.getValue("_id")}</div>
 			),
 		},
 		{
 			accessorKey: "overallScore",
-			header: () => <Button variant={"ghost"}>Overall Score</Button>,
+			header: () => <Button variant="ghost">Overall Score</Button>,
 			cell: ({ row }) => {
 				const score = parseFloat(row.getValue("overallScore"));
 				return (
@@ -115,7 +114,7 @@ export default function UserContracts() {
 				return (
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
-							<Button variant={"ghost"} className="size-8 rounded-full p-0">
+							<Button variant="ghost" className="size-8 rounded-full p-0">
 								<span className="sr-only">Open options</span>
 								<MoreHorizontalIcon className="size-4" />
 							</Button>
@@ -185,101 +184,136 @@ export default function UserContracts() {
 	return (
 		<div className="container mx-auto p-6 space-y-8">
 			<div className="flex justify-between items-center">
-				<h1 className="text-3xl font-bold">Contract Overview</h1>
-				<Button onClick={() => setIsUploadModalOpen(true)}>
+				<motion.h1
+					className="text-3xl font-bold"
+					initial={{ opacity: 0 }}
+					animate={{ opacity: 1 }}
+				>
+					Contract Overview
+				</motion.h1>
+				<Button
+					onClick={() => setIsUploadModalOpen(true)}
+					className="transform transition-transform duration-300 hover:scale-105"
+				>
 					Add New Contract
 				</Button>
 			</div>
 			<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-				<Card>
-					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-						<CardTitle className="text-sm font-medium">
-							Total Contracts
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<div className="text-2xl font-bold">{totalContracts}</div>
-					</CardContent>
-				</Card>
-				<Card>
-					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-						<CardTitle className="text-sm font-medium">
-							Average Contract Score
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<div className="text-2xl font-bold">{averageScore.toFixed(2)}%</div>
-					</CardContent>
-				</Card>
-				<Card>
-					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-						<CardTitle className="text-sm font-medium">
-							High Risk Contracts
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<div className="text-2xl font-bold">{highRiskContracts}</div>
-					</CardContent>
-				</Card>
+				<motion.div
+					initial={{ opacity: 0, y: 20 }}
+					animate={{ opacity: 1, y: 0 }}
+				>
+					<Card>
+						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+							<CardTitle className="text-sm font-medium">
+								Total Contracts
+							</CardTitle>
+						</CardHeader>
+						<CardContent>
+							<div className="text-2xl font-bold">{totalContracts}</div>
+						</CardContent>
+					</Card>
+				</motion.div>
+				<motion.div
+					initial={{ opacity: 0, y: 20 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ delay: 0.1 }}
+				>
+					<Card>
+						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+							<CardTitle className="text-sm font-medium">
+								Average Contract Score
+							</CardTitle>
+						</CardHeader>
+						<CardContent>
+							<div className="text-2xl font-bold">
+								{averageScore.toFixed(2)}%
+							</div>
+						</CardContent>
+					</Card>
+				</motion.div>
+				<motion.div
+					initial={{ opacity: 0, y: 20 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ delay: 0.2 }}
+				>
+					<Card>
+						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+							<CardTitle className="text-sm font-medium">
+								High Risk Contracts
+							</CardTitle>
+						</CardHeader>
+						<CardContent>
+							<div className="text-2xl font-bold">{highRiskContracts}</div>
+						</CardContent>
+					</Card>
+				</motion.div>
 			</div>
 
-			<div className="rounded-md border">
-				<Table>
-					<TableHeader>
-						{table.getHeaderGroups().map((headerGroup) => (
-							<TableRow key={headerGroup.id}>
-								{headerGroup.headers.map((header) => (
-									<TableHead key={header.id}>
-										{header.isPlaceholder
-											? null
-											: flexRender(
-													header.column.columnDef.header,
-													header.getContext()
-											  )}
-									</TableHead>
-								))}
-							</TableRow>
-						))}
-					</TableHeader>
-					<TableBody>
-						{table.getRowModel().rows.length ? (
-							table.getRowModel().rows.map((row) => (
-								<TableRow
-									key={row.id}
-									data-state={row.getIsSelected() && "selected"}
-								>
-									{row.getVisibleCells().map((cell) => (
-										<TableCell key={cell.id}>
-											{flexRender(
-												cell.column.columnDef.cell,
-												cell.getContext()
-											)}
-										</TableCell>
+			<div className="rounded-md border overflow-hidden">
+				<motion.div
+					initial={{ opacity: 0 }}
+					animate={{ opacity: 1 }}
+					className="overflow-x-auto"
+				>
+					<Table>
+						<TableHeader>
+							{table.getHeaderGroups().map((headerGroup) => (
+								<TableRow key={headerGroup.id}>
+									{headerGroup.headers.map((header) => (
+										<TableHead key={header.id}>
+											{header.isPlaceholder
+												? null
+												: flexRender(
+														header.column.columnDef.header,
+														header.getContext()
+												  )}
+										</TableHead>
 									))}
 								</TableRow>
-							))
-						) : (
-							<TableRow>
-								<TableCell colSpan={columns.length} className="text-center">
-									No contracts found.
-								</TableCell>
-							</TableRow>
-						)}
-					</TableBody>
-				</Table>
+							))}
+						</TableHeader>
+						<TableBody>
+							{table.getRowModel().rows.length ? (
+								table.getRowModel().rows.map((row) => (
+									<TableRow
+										key={row.id}
+										data-state={row.getIsSelected() && "selected"}
+										className="hover:bg-gray-100 transition-colors"
+									>
+										{row.getVisibleCells().map((cell) => (
+											<TableCell key={cell.id}>
+												{flexRender(
+													cell.column.columnDef.cell,
+													cell.getContext()
+												)}
+											</TableCell>
+										))}
+									</TableRow>
+								))
+							) : (
+								<TableRow>
+									<TableCell colSpan={columns.length} className="text-center">
+										No contracts found.
+									</TableCell>
+								</TableRow>
+							)}
+						</TableBody>
+					</Table>
+				</motion.div>
 			</div>
 			<div className="flex items-center justify-end space-x-2 py-4">
 				<Button
-					variant={"outline"}
-					size={"sm"}
+					variant="outline"
+					size="sm"
 					onClick={() => table.setPageIndex(0)}
 					disabled={!table.getCanPreviousPage()}
 				>
 					Previous
 				</Button>
 				<Button
-					variant={"outline"}
-					size={"sm"}
+					variant="outline"
+					size="sm"
 					onClick={() => table.setPageIndex(table.getPageCount() - 1)}
 					disabled={!table.getCanNextPage()}
 				>

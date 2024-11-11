@@ -1,20 +1,5 @@
-import { Label, Pie, PieChart } from "recharts";
-
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
-import {
-	ChartConfig,
-	ChartContainer,
-	ChartTooltip,
-	ChartTooltipContent,
-} from "@/components/ui/chart";
-import { color } from "framer-motion";
+import { PieChart, Pie, Cell, Tooltip } from "recharts";
+import { motion } from "framer-motion";
 
 interface IOverallScoreChartProps {
 	overallScore: number;
@@ -24,62 +9,42 @@ export default function OverallScoreChart({
 	overallScore,
 }: IOverallScoreChartProps) {
 	const pieChartData = [
-		{
-			name: "Risks",
-			value: 100 - overallScore,
-			fill: "hsl(var(--chart-1))",
-		},
-		{
-			name: "Opportunities",
-			value: overallScore,
-			fill: "hsl(var(--chart-2))",
-		},
+		{ name: "Risks", value: 100 - overallScore, color: "#FF6384" },
+		{ name: "Opportunities", value: overallScore, color: "#36A2EB" },
 	];
 
-	const chartConfig = {
-		value: {
-			label: "value",
-		},
-		Risks: {
-			label: "Risks",
-			color: "hsl(var(--chart-1))",
-		},
-		Opportunities: {
-			label: "Opportunities",
-			color: "hsl(var(--chart-2))",
-		},
-	} satisfies ChartConfig;
-
 	return (
-		<div className="w-full h-48">
-			<ChartContainer
-				config={chartConfig}
-				className="mx-auto aspect-square max-h-[250px]"
-			>
-				<PieChart>
-					<ChartTooltip cursor content={<ChartTooltipContent />} />
-					<Pie
-						data={pieChartData}
-						dataKey="value"
-						nameKey="name"
-						innerRadius={60}
-						paddingAngle={5}
+		<motion.div
+			className="w-full h-64 flex items-center justify-center"
+			initial={{ opacity: 0 }}
+			animate={{ opacity: 1 }}
+		>
+			<PieChart width={250} height={250}>
+				<Pie
+					data={pieChartData}
+					dataKey="value"
+					nameKey="name"
+					innerRadius={60}
+					outerRadius={80}
+					paddingAngle={5}
+					startAngle={90}
+					endAngle={450}
+				>
+					{pieChartData.map((entry, index) => (
+						<Cell key={`cell-${index}`} fill={entry.color} />
+					))}
+					<text
+						x={125}
+						y={125}
+						textAnchor="middle"
+						dominantBaseline="middle"
+						className="text-2xl font-bold"
 					>
-						<Label
-							content={({ viewBox }) => {
-								if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-									return (
-										<text>
-											<tspan>{overallScore} %</tspan>
-											<tspan>Score</tspan>
-										</text>
-									);
-								}
-							}}
-						/>
-					</Pie>
-				</PieChart>
-			</ChartContainer>
-		</div>
+						{overallScore}%
+					</text>
+				</Pie>
+				<Tooltip />
+			</PieChart>
+		</motion.div>
 	);
 }

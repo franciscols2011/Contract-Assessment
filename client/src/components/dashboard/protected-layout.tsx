@@ -12,6 +12,7 @@ import {
 import { Button } from "../ui/button";
 import Link from "next/link";
 import { useModalStore } from "@/store/zustand";
+import { motion } from "framer-motion";
 
 export function ProtectedLayout({ children }: { children: React.ReactNode }) {
 	const { user, isLoading } = useCurrentUser();
@@ -19,9 +20,7 @@ export function ProtectedLayout({ children }: { children: React.ReactNode }) {
 	if (isLoading) {
 		return (
 			<div className="flex items-center justify-center h-screen">
-				<div className="flex items-center justify-center">
-					<Loader2 className="size-4 mr-2 animate-spin" />
-				</div>
+				<Loader2 className="size-16 animate-spin text-primary" />
 			</div>
 		);
 	}
@@ -38,19 +37,21 @@ export function ProtectedLayout({ children }: { children: React.ReactNode }) {
 }
 
 export default function AuthCard() {
-
-    const { openModal} = useModalStore();
+	const { openModal } = useModalStore();
 
 	return (
 		<Card className="w-full max-w-3xl mx-auto">
 			<div className="flex flex-col sm:flex-row">
-				<div className="sm:w-1/4 bg-primary/10 flex items-center justify-center p-4">
-					<LockIcon className="size-16 text-primary" />
-				</div>
+				<motion.div
+					className="sm:w-1/4 bg-gradient-to-b from-blue-500 to-purple-500 flex items-center justify-center p-4"
+					initial={{ opacity: 0, x: -50 }}
+					animate={{ opacity: 1, x: 0 }}
+				>
+					<LockIcon className="size-16 text-white" />
+				</motion.div>
 				<div className="sm:w-3/4 p-4">
 					<CardHeader className="space-y-1 px-0 pb-2">
 						<CardTitle className="text-2xl font-bold">
-							{" "}
 							Authentication Required
 						</CardTitle>
 						<CardDescription>
@@ -61,13 +62,16 @@ export default function AuthCard() {
 						<div className="flex flex-col sm:flex-row gap-2">
 							<Button
 								onClick={() => openModal("connectAccountModal")}
-								className="flex-1"
-								variant={"outline"}
+								className="flex-1 transform transition-transform duration-300 hover:scale-105"
+								variant="default"
 							>
 								Continue with Google
 							</Button>
 							<Link href={"/"} className="flex-1">
-								<Button className="w-full" variant={"destructive"}>
+								<Button
+									className="w-full transform transition-transform duration-300 hover:scale-105"
+									variant="outline"
+								>
 									Back to Home
 								</Button>
 							</Link>

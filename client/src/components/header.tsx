@@ -23,7 +23,7 @@ export function Header() {
 						alt="Company Logo"
 						width={40}
 						height={40}
-						className="pr-2"
+						className="pr-2 transform transition-transform duration-500 hover:rotate-180"
 					/>
 				</Link>
 				<nav className="hidden md:flex items-center space-x-7 text-sm font-medium">
@@ -32,10 +32,8 @@ export function Header() {
 							key={item.name}
 							href={item.href}
 							className={cn(
-								"transition-colors hover:text-foreground/80",
-								pathname === item.href
-									? "text-foreground"
-									: "text-foreground/60"
+								"transition-colors hover:text-primary hover:underline",
+								pathname === item.href ? "text-primary" : "text-foreground/60"
 							)}
 						>
 							{item.name}
